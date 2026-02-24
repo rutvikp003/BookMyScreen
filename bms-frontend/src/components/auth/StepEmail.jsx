@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 const StepEmail = ({ onNext }) => {
-  const [email, setEmail] = useState();
+  const [email, setEmail] = useState("");
   const {sendOtpRequest} = useAuth();
 
   const handleSendOtp = (e) => {

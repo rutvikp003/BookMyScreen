@@ -16,20 +16,20 @@ export const AuthProvider = ({ children }) => {
 
   // mutation for sending OTP
 
-  const sendOtpRequestMutation = useMutation(sendOTP, {
-    mutationfn: (email) => sendOTP({ email }),
+  const sendOtpRequestMutation = useMutation({
+    mutationFn: (email) => sendOTP({ email }),
   });
 
   const verifyOtpRequestMutation = useMutation({
-    mutationfn: (reqData) => verifyOTP(reqData),
+    mutationFn: (reqData) => verifyOTP(reqData),
   });
 
   const activateUserMutation = useMutation({
-    mutationfn: (reqData) => activate(reqData),
+    mutationFn: (reqData) => activate(reqData),
   });
 
   const logOutMutation = useMutation({
-    mutationfn: () => logout(),
+    mutationFn: () => logout(),
   });
 
   const toggleModal = () => {
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   const sendOtpRequest = async ({ email, onNext }) => {
     sendOtpRequestMutation.mutate(email, {
-      onSuccess: (data) => {
+      onSuccess: (res) => {
         console.log(res.data);
         setAuthData(res.data);
         toast.success("OTP sent successfully");

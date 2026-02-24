@@ -1,6 +1,7 @@
 import { useState } from "react";
-import {useCountdown} from "../../hooks/useCountdown";
+import useCountdown from "../../hooks/useCountdown";
 import { IoClose } from "react-icons/io5";
+import { useAuth } from "../../context/AuthContext";
 
 const StepOTP = ({ onNext }) => {
   const [otpArray, setOtpArray] = useState(new Array(4).fill(""));
@@ -9,12 +10,10 @@ const StepOTP = ({ onNext }) => {
   const {verifyOtpRequest} = useAuth();
 
 
-  const { displayTime, isExpired } = useCountdown(
-    {
+  const { displayTime, isExpired } = useCountdown({
       initialTimeInSeconds: 2 * 60,
-    },
-    300,
-  );
+    },300,);
+
   const handleVerifyOtp = (e) => {
     e.preventDefault();
     const otp = parseInt(otpArray.join(""),10);
@@ -26,9 +25,9 @@ const StepOTP = ({ onNext }) => {
   }
 
   const handleOtpChange = ({target}, index) => {
-    const value = target.value;
+    const {value} = target;
     if (isNaN(parseInt(value))) {
-      setOtpArray([...otpArray.map((d, idx) => (idx === index ? "" : d))]);
+      setOtpArray([...otpArray.map((d, idx) => (idx === index ? value : d))]);
       if (value !== "" && index < inputRef.current.length - 1) {
         inputRef.current[index + 1].focus();
       }
