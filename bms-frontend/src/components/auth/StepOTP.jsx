@@ -1,11 +1,14 @@
 import { useState } from "react";
-import useCountdown from "../../hooks/useCountdown";
+import {useCountdown} from "../../hooks/useCountdown";
 import { IoClose } from "react-icons/io5";
 
 const StepOTP = ({ onNext }) => {
   const [otpArray, setOtpArray] = useState(new Array(4).fill(""));
 
-  const inuptRef = useState();
+  const inputRef = useState();
+  const {verifyOtpRequest} = useAuth();
+
+
   const { displayTime, isExpired } = useCountdown(
     {
       initialTimeInSeconds: 2 * 60,
@@ -14,12 +17,28 @@ const StepOTP = ({ onNext }) => {
   );
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    onNext();
+    const otp = parseInt(otpArray.join(""),10);
+    verifyOtpRequest(otp, onNext );
   };
 
   const handleResendOtp = (e) => {
     e.preventDefault();
   }
+
+  const handleOtpChange = ({target}, index) => {
+    const value = target.value;
+    if (isNaN(parseInt(value))) {
+      setOtpArray([...otpArray.map((d, idx) => (idx === index ? "" : d))]);
+      if (value !== "" && index < inputRef.current.length - 1) {
+        inputRef.current[index + 1].focus();
+      }
+    }
+  };
+
+  const handleclearotp = () => {
+    setOtpArray(new Array(4).fill(""));
+    inputRef.current[0]?.focus();
+  };
 
   return (
     <>
@@ -46,6 +65,7 @@ const StepOTP = ({ onNext }) => {
             />
           ))}
           <button
+            onClick={handleclearotp}
             type="button"
             className="w-8 cursor-pointer h-8 border border-gray-300 rounded-md items-center font-bold ml-1 text-[#f74565]"
           >

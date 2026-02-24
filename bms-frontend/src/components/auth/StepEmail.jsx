@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const StepEmail = ({ onNext }) => {
   const [email, setEmail] = useState();
+  const {sendOtpRequest} = useAuth();
+
   const handleSendOtp = (e) => {
     e.preventDefault();
-    onNext();
+    if (!email) return;
+    sendOtpRequest({ email, onNext })
   };
   return (
     <>

@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const StepAccountCreation = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const {activateUserRequest} = useAuth();
 
   const handleActivateAccount = (e) => {
     e.preventDefault();
+    activateUserRequest({name, phone});
   };
   return (
     <>
