@@ -1,6 +1,6 @@
 import { useState, useContext, createContext } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { sendOTP, verifyOTP, activate, logout} from "../apis";
+import { sendOTP, verifyOTP, activate, logout } from "../apis";
 import { toast } from "react-hot-toast";
 
 const AuthContext = createContext();
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     setShowModal(!showModal);
   };
 
-  const sendOtpRequest = async ({ email, onNext }) => {
+  const sendOtpRequest = async ({ email, onNext, setLoading }) => {
     sendOtpRequestMutation.mutate(email, {
       onSuccess: (res) => {
         console.log(res.data);
@@ -56,12 +56,12 @@ export const AuthProvider = ({ children }) => {
     const reqData = { otp, hash, email };
     verifyOtpRequestMutation.mutate(reqData, {
       onSuccess: (res) => {
-        setAuthData(null)
+        setAuthData(null);
         setUser(res.data);
         setAuth(true);
         if (!res.data.user?.activateUser) {
-        onNext();
-        }else {
+          onNext();
+        } else {
           setStep(1);
           toggleModal();
         }
@@ -74,28 +74,28 @@ export const AuthProvider = ({ children }) => {
   };
 
   const activateUserRequest = async (data) => {
-    const {name, phone} = data;
-    const {id} = user?._id;
-    const reqData = {name, phone, id};
+    const { name, phone } = data;
+    const { id } = user?._id;
+    const reqData = { id, name, phone };
 
     activateUserMutation.mutate(reqData, {
       onSuccess: (res) => {
         console.log(res);
-        setUser(res.data);        
+        setUser(res.data);
         setStep(1);
         toggleModal();
       },
       onError: (err) => {
         console.log(err);
         toast.error(err?.response?.error?.message || "Something went wrong");
-      }
+      },
     });
   };
 
   const logOutRequest = () => {
     logOutMutation.mutate(null, {
       onSuccess: (data) => {
-        console.log(data);          
+        console.log(data);
         setAuth(false);
         setUser(null);
         window.location.href = "/";
@@ -103,13 +103,30 @@ export const AuthProvider = ({ children }) => {
       onError: (err) => {
         console.log(err);
         toast.error(err?.response?.error?.message || "Something went wrong");
-      }
+      },
     });
   };
 
 
   return (
-    <AuthContext.Provider value={{ step, setStep, showModal, toggleModal, user, authData, sendOtpRequest, verifyOtpRequest, activateUserRequest, logOutRequest, auth }}>
+    <AuthContext.Provider
+      value={{
+        step,
+        setStep,
+        showModal,
+        toggleModal,
+        user,
+        authData,
+        sendOtpRequest,
+        verifyOtpRequest,
+        activateUserRequest,
+        logOutRequest,
+        auth,
+        otpLoader: sendOtpRequestMutation.isPending,
+        varifyOtpLoader: verifyOtpRequestMutation.isPending,
+        activateUserLoader: activateUserMutation.isPending,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

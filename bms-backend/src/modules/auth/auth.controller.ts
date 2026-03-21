@@ -43,8 +43,7 @@ export const sendOtp = async (
     // 4. Respond to the client;
     res.json({
       hash: `${hashedOTP}.${expires}`,
-      email,
-      msg: "OTP sent to email successfully",
+      email, msg: "OTP sent to email successfully",
     });
   } catch (error) {
     next(error);
@@ -56,7 +55,7 @@ export const verifyOTP = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, otp, hash, name } = req.body;
+  const { email, otp, hash } = req.body;
   console.log(name);
   
 
@@ -82,13 +81,7 @@ export const verifyOTP = async (
   //2. Find or create new user;
   let user;
   try {
-    user = await UserService.createUser({
-      email,
-      name: name || "",  // Empty string as default
-      role: "user",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    user = await UserService.getUserByEmail(email);
     if (!user) {
       user = await UserService.createUser(email);
     }
@@ -107,14 +100,14 @@ export const verifyOTP = async (
 
   // 5 sending token in cookie
   res.cookie("accessToken", accessToken, {
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    maxAge: 1000 * 60 * 60 , // 1 hour
     httpOnly: true,
     sameSite: "none",
     secure: true,
   });
 
   res.cookie("refreshToken", refreshToken, {
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    maxAge: 1000 * 60 * 60, // 1 hour
     httpOnly: true,
     sameSite: "none",
     secure: true,

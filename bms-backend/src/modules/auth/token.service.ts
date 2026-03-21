@@ -31,18 +31,14 @@ export const storeRefreshToken = async (
 export const verifyAccessToken = (
   token: string,
 ): ITokenPayload | JwtPayload => {
-  return jwt.verify(token, config.accessTokenSecret) as
-    | ITokenPayload
-    | JwtPayload;
+  return jwt.verify(token, config.accessTokenSecret) as ITokenPayload | JwtPayload;
 };
 
 // verify refresh token
 export const verifyRefreshToken = (
   token: string,
 ): ITokenPayload | JwtPayload => {
-  return jwt.verify(token, config.refreshTokenSecret) as
-    | ITokenPayload
-    | JwtPayload;
+  return jwt.verify(token, config.refreshTokenSecret) as ITokenPayload | JwtPayload;
 };
 
 // DB Operations on refresh token

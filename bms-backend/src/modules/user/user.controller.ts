@@ -32,7 +32,7 @@ export const getUserById = async (
   next: NextFunction,
 ) => {
   try {
-    const user = await UserService.getUserById(req.user?.id);
+    const user = await UserService.getUserById(req.params.id);
     if (!user) {
       res.status(404).json({ message: "User not found" });
     }

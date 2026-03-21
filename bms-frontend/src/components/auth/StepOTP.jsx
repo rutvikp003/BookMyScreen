@@ -12,7 +12,7 @@ const StepOTP = ({ onNext }) => {
 
   const { displayTime, isExpired } = useCountdown({
       initialTimeInSeconds: 2 * 60,
-    },300,);
+    },300);
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
@@ -26,10 +26,11 @@ const StepOTP = ({ onNext }) => {
 
   const handleOtpChange = ({target}, index) => {
     const {value} = target;
-    if (isNaN(parseInt(value))) {
+    if (!isNaN(parseInt(value))) {
       setOtpArray([...otpArray.map((d, idx) => (idx === index ? value : d))]);
+      // focus on next input
       if (value !== "" && index < inputRef.current.length - 1) {
-        inputRef.current[index + 1].focus();
+        inputRef.current[index + 1]?.focus();
       }
     }
   };
@@ -52,13 +53,13 @@ const StepOTP = ({ onNext }) => {
 
         {/* OTP input */}
         <div className="flex items-center justify-center gap-2">
-          {otpArray.map((value, index) => (
+          {otpArray.map((digit, index) => (
             <input
               key={index}
               type="text"
               name="otp"
               maxLength={1}
-              value={value}
+              value={digit}
               onChange={(e) => handleOtpChange(e, index)}
               className="w-12 h-12 border border-gray-300 rounded-md text-center text-white-500 font-bold focus:outline-none focus:ring-2 focus:ring-black mx-1 border border-gray-200"
             />

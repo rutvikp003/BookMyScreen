@@ -2,8 +2,8 @@ export interface IUser {
   _id?: string;
   email: string;
   // password: string;
-  phone?: string;
-  name?: string;
+  name: string;
+  phone?: number;
   activateUser?: boolean;
   role: "admin" | "user";
   createdAt?: Date;

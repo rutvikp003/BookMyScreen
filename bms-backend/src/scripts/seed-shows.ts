@@ -35,7 +35,7 @@ const toDateWithTime = (baseDate: Date, timeStr: string) => {
 };
 
 export const seedShow = async () => {
-  const movieIds = ["6971ef7e2952469172186711", "6971ef7e2952469172186712"];
+  const movieIds = ["69bd50906df24ab4233ccd95", "69bd50906df24ab4233ccd96"];
   const movies = await MovieModel.find({ _id: { $in: movieIds } });
   const theatres = await TheaterModel.find({ state: "Gujarat" });
 

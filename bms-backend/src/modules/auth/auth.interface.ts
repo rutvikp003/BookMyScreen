@@ -15,4 +15,5 @@ export interface ITokenPayload {
   _id: string | undefined ;
   email?: string;
   phone?: string;
+  role?: string;
 }
