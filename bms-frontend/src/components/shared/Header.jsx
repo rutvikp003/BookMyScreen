@@ -5,11 +5,12 @@ import Map from "../../assets/pin.gif";
 import { useNavigate } from "react-router-dom";
 import SignInModel from "./SignInModel.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { FaUser } from "react-icons/fa";
 
 
 const header = () => {
   const navigate = useNavigate();
-  const { toggleModal } = useAuth();
+  const { toggleModal, auth, user } = useAuth();
   const { location, loading, error } = useLocation();
 
   return (
@@ -43,11 +44,24 @@ const header = () => {
               )}
               {location && <p>{location} &nbsp; </p>}
             </div>
-            <button
-              onClick={ () => toggleModal() } 
-              className="bg-[#f84494] cursor-pointer text-white px-4 py-1.5 rounded text-sm">
-              Sign In
-            </button>
+              {
+                auth ? (
+                  <>
+                    <span className="cursor-pointer text-sm font-medium border rounded-full border-gray-300 p-2">
+                      <FaUser className="text-gray-500"/>
+                    </span>
+                    <span onClick={() => navigate(`/profile/${user?._id}`)} className="text-sm -ml-3 font-normal cursor-pointer hover:text-red-500">
+                      hi, {user ? user?.name.split(" ")[0] : "Test User"} &nbsp;
+                    </span>
+                  </>
+                ):(
+                <button
+                  onClick={ () => toggleModal() } 
+                  className="bg-[#f84494] cursor-pointer text-white px-4 py-1.5 rounded text-sm">
+                  Sign In
+                </button>
+                )
+              }
           </div>
         </div>
       </div>
