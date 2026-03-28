@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     verifyOtpRequestMutation.mutate(reqData, {
       onSuccess: (res) => {
         setAuthData(null);
-        setUser(res.data);
+        setUser(res.data.user);
         setAuth(true);
         if (!res.data.user?.activateUser) {
           onNext();
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
 
   const activateUserRequest = async (data) => {
     const { name, phone } = data;
-    const { id } = user?._id;
+    const id = user?._id;
     const reqData = { id, name, phone };
 
     activateUserMutation.mutate(reqData, {

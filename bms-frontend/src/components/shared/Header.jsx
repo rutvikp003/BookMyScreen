@@ -39,7 +39,7 @@ const header = () => {
           <div className="flex item-center space-x-6">
             <div className="text-sm font-medium cursor-pointer mt-2">
               {loading && (
-                <img src={Map} alt="loading..." className="w-10 h-10" />
+                <img src={Map} alt="loading..." className="w-6 h-6" />
               )}
               {location && <p>{location} &nbsp; </p>}
             </div>

@@ -4,6 +4,7 @@ import * as UserService from "../user/user.service";
 import * as TokenService from "./token.service";
 import createHttpError from "http-errors";
 import { isValidEmail } from "../../utils";
+import {config} from "../../config/config";
 
 export const sendOtp = async (
   req: Request,
@@ -55,65 +56,61 @@ export const verifyOTP = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, otp, hash } = req.body;
-  console.log(name);
-  
-
-  if (!email || !otp || !hash) {
-    const err = new createHttpError.BadRequest("All fields are required");
-    return next(err);
-  }
-
-  // 1. OTP Verification;
-  const [hashedOTP, expires] = hash.split(".");
-  if (Date.now() > +expires) {
-    const err = new createHttpError.Gone("OTP Expired");
-    return next(err);
-  }
-  const data = `${email}.${otp}.${expires}`;
-  const isValid = OtpService.verifyOTP(hashedOTP, data);
-
-  if (!isValid) {
-    const err = new createHttpError.Unauthorized("Invalid OTP");
-    return next(err);
-  }
-
-  //2. Find or create new user;
-  let user;
   try {
+    const { email, otp, hash } = req.body;
+
+    if (!email || !otp || !hash) {
+      const err = new createHttpError.BadRequest("All fields are required");
+      return next(err);
+    }
+
+    // 1. OTP Verification
+    const [hashedOTP, expires] = hash.split(".");
+    if (Date.now() > +expires) {
+      const err = new createHttpError.Gone("OTP Expired");
+      return next(err);
+    }
+    const data = `${email}.${otp}.${expires}`;
+    const isValid = OtpService.verifyOTP(hashedOTP, data);
+
+    if (!isValid) {
+      const err = new createHttpError.Unauthorized("Invalid OTP");
+      return next(err);
+    }
+
+    // 2. Find or create user
+    let user;
     user = await UserService.getUserByEmail(email);
     if (!user) {
-      user = await UserService.createUser(email);
+      user = await UserService.createUser({email});
     }
+
+    // 3. Generate JWT
+    const { accessToken, refreshToken } = TokenService.generateToken({
+      _id: user._id,
+      email: user.email,
+    });
+    // 4. Store refresh token
+    await TokenService.storeRefreshToken(user._id as string, refreshToken);
+
+    res.cookie("accessToken", accessToken, {
+      maxAge: 1000 * 60 * 60,
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60,
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.json({ auth: true, user });
+
   } catch (error) {
-    return next(error);
+    next(error);
   }
-
-  //3.Generate JWT
-  const { accessToken, refreshToken } = TokenService.generateToken({
-    _id: user._id,
-    email: user.email,
-  });
-
-  // 4. Store refresh token in DB;
-  await TokenService.storeRefreshToken(user._id as string, refreshToken);
-
-  // 5 sending token in cookie
-  res.cookie("accessToken", accessToken, {
-    maxAge: 1000 * 60 * 60 , // 1 hour
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    maxAge: 1000 * 60 * 60, // 1 hour
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-  });
-
-  res.json({ auth: true, user });
 };
 
 export const logout = async (
